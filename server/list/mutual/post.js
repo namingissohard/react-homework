@@ -20,7 +20,7 @@ module.exports = {
       var param = req.query || req.params;
       // 建立连接，向表中插入值
       // 'INSERT INTO post(id, title, content) VALUES(0,?,?)',
-      connection.query($sql.insert, [0, param.content], function (err, result) {
+      connection.query($sql.insert, [0, req.body.content], function (err, result) {
         if (result) {
           result = {
             code: 200,
@@ -35,6 +35,7 @@ module.exports = {
     });
   },
   queryAll: function (req, res, next) {
+    
     pool.getConnection(function (err, connection) {
       connection.query($sql.queryAll, function (err, result) {
         jsonWrite(res, result);
@@ -45,16 +46,21 @@ module.exports = {
   delete:function(req, res, next){
     pool.getConnection(function (err, connection) {
       var param = req.query || req.params;
-      connection.query($sql.delete,[param.id], function (err, result) {
+      
+      console.log(req.body,11)
+      connection.query($sql.delete,req.body.id, function (err, result) {
         jsonWrite(res, result);
         connection.release();
       });
     });
   },
-  switchStatus(){
+  switchStatus(req, res, next){
     pool.getConnection(function (err, connection) {
       var param = req.query || req.params;
-      connection.query($sql.update,[(param.status?1:0),param.id], function (err, result) {
+      let status = req.body.status ? 1:0,
+      id = req.body.id
+      console.log(status, id)
+      connection.query($sql.update,[status,id], function (err, result) {
         jsonWrite(res, result);
         connection.release();
       });

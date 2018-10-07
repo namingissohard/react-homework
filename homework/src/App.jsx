@@ -62,7 +62,7 @@ class App extends React.Component {
 
   complete(id, status) {
     $.ajax({
-      url: 'http://localhost:3000/update',
+      url: 'http://localhost:3000/switchStatus',
       type: 'post',
       headers: {
         'Content-Type': 'application/json',
