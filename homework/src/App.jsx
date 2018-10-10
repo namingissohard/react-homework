@@ -1,10 +1,11 @@
-import React, { Component } from 'react';
+import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 import List from './components/List';
 import Editor from './components/Editor';
 import $ from 'jquery';
-import ListView from './components/ListView';
+import WallList from './components/wall/WallList';
+import WallEditor from './components/wall/Editor'
 import { observer } from 'mobx-react'
 
 
@@ -23,6 +24,15 @@ class App extends React.Component {
       }
     }
     $.ajax(option)
+    const option2 = {
+      url: 'http://localhost:3000/wall/get',
+      type: 'get',
+      success: (res) => {
+        this.props.list.updateWallData(res)
+        console.log(res)
+      }
+    }
+    $.ajax(option2)
   }
 
   update(newData) {
@@ -59,7 +69,23 @@ class App extends React.Component {
       }
     })
   }
-
+  addWall(name, content){
+    $.ajax({
+      url: 'http://localhost:3000/wall/create',
+      type: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: JSON.stringify({
+        content: content,
+        name: name
+      })
+      ,
+      success: (res) => {
+        this.getData()
+      }
+    })
+  }
   complete(id, status) {
     $.ajax({
       url: 'http://localhost:3000/switchStatus',
@@ -89,9 +115,14 @@ class App extends React.Component {
         </p>
 
 
-        <List deletefunc={(id) => this.delete(id)} complete={(id, status) => this.complete(id, status)} data={this.props.list.data}></List>
-        <Editor add={(content) => this.add(content)} text={this.props.list.text}></Editor>
+        <List deletefunc={(id) => this.delete(id)} 
+              complete={(id, status) => this.complete(id, status)} 
+              data={this.props.list.data}></List>
+        <Editor add={(content) => this.add(content)} 
+                text={this.props.list.text}></Editor>
         <div>总共{this.props.list.data.length}件，已完成{this.props.list.finished}件</div>
+        <WallList data={this.props.list.wallData}/>
+        <WallEditor addWall={(name, content)=>this.addWall(name, content)}/>
       </div>
     )
   }

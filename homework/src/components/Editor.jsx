@@ -12,10 +12,6 @@ class Editor extends React.Component {
             text: e.target.value
         })
     }
-    algorithm(){
-        let input = this.state.text.split(',')
-        
-    }
     render() {
         const input = this.state.text
         return (

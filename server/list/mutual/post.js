@@ -65,5 +65,32 @@ module.exports = {
         connection.release();
       });
     });
+  },
+  getWallData(req, res, next){
+    pool.getConnection(function (err, connection) {
+      connection.query($sql.getWallData, function (err, result) {
+        jsonWrite(res, result);
+        connection.release();
+      });
+    });
+  },
+  addWall(req, res, next){
+    pool.getConnection(function (err, connection) {
+      // 建立连接，向表中插入值
+      // 'INSERT INTO post(id, title, content) VALUES(0,?,?)',
+      connection.query($sql.insertWallData, [req.body.name, req.body.content], function (err, result) {
+        if (result) {
+          result = {
+            code: 200,
+            msg: '创建成功' 
+          };
+        }
+
+        // 以json形式，把操作结果返回给前台页面
+        jsonWrite(res, result);
+        // 释放连接
+        connection.release();
+      });
+    });
   }
 };
